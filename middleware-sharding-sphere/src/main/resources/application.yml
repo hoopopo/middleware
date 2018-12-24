@@ -1,0 +1,9 @@
+spring: 
+  profiles: 
+    include: sharding
+
+mybatis: 
+  #mapper-locations: classpath*:mybatis/*.xml #用xml的形式必须要配置
+  type-aliases-package: net.popo.*.po
+  configuration:
+    call-setters-on-nulls: true

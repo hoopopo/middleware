@@ -1,0 +1,59 @@
+sharding:
+  jdbc:
+    datasource:
+      names: master,slave #数据源名称，多数据源以逗号分隔
+      master:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://10.2.98.14:3306/predb?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false
+        username: pre_usr
+        password: pre_dev2018
+        type: com.alibaba.druid.pool.DruidDataSource
+        filters: stat
+        initial-size: 1
+        min-idle: 1
+        max-active: 20
+        max-wait: 60000
+        time-between-eviction-runs-millis: 60000
+        min-evictable-idle-time-millis: 300000
+        validation-query: SELECT 'x'
+        test-while-idle: true
+        test-on-borrow: false
+        test-on-return: false
+        pool-prepared-statements: false
+        max-pool-prepared-statement-per-connection-size: 20
+      slave:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://10.2.98.174:3306/predb?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false
+        username: pre_usr
+        password: pre_dev2018
+        type: com.alibaba.druid.pool.DruidDataSource
+        filters: stat
+        initial-size: 1
+        min-idle: 1
+        max-active: 20
+        max-wait: 60000
+        time-between-eviction-runs-millis: 60000
+        min-evictable-idle-time-millis: 300000
+        validation-query: SELECT 'x'
+        test-while-idle: true
+        test-on-borrow: false
+        test-on-return: false
+        pool-prepared-statements: false
+        max-pool-prepared-statement-per-connection-size: 20
+    config:
+      sharding:
+        props:
+          sql:
+            show: true
+        tables: # 分表规则
+          demo: # 要分的表
+            actual-data-nodes: sharding_db.demo$->{0..2} # 哪个库的哪些表(子表)
+            key-generator-column-name: id # 主键
+            table-strategy: # 分表策略
+              inline: # 行表达式策略
+                shardingColumn: mobile  # 用于分表的字段
+                algorithmExpression: demo$->{mobile % 3} # 分表规则表达式
+        master-slave-rules: # 主从配置规则
+          sharding_db:  # 所有数据库的集合
+            master-data-source-name: master # 主
+            slave-data-source-names: slave  # 从
